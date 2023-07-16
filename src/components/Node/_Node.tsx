@@ -1,13 +1,16 @@
-import {FC} from "react";
-import {AssetNode, AssetNodeKind} from "../../types";
-import {CheckIcon, DocumentIcon, EllipsisVerticalIcon, FolderIcon, MinusIcon} from "../Icons";
+import {Checkbox, FolderOpenedIcon} from "@/components";
+import clsx from "clsx";
+import {FC, MouseEvent} from "react";
+import {AssetNode, AssetNodeKind} from "@/types";
+import {DocumentIcon, EllipsisVerticalIcon, FolderIcon} from "@/components/Icons";
 
 interface NodeProps {
     node: AssetNode;
     onDrag: () => void;
-    onSelect: (id: number) => void;
+    onSelect: (node: AssetNode) => void;
     selected: boolean;
-    childrenSelected: boolean;
+    indeterminate: boolean;
+    onDoubleClick: (nodeId: number) => void;
 }
 
 export const Node: FC<NodeProps> = ({
@@ -15,26 +18,44 @@ export const Node: FC<NodeProps> = ({
     onDrag,
     onSelect,
     selected= false,
-    childrenSelected = false
+    indeterminate = false,
+    onDoubleClick
 }) => {
+    const paddingLeft = (node.level ?? 0) * 24;
+
+    const handleClick = (e: MouseEvent) => {
+        if (e.detail === 2) {
+            onDoubleClick?.(node.id)
+        }
+    }
+
     return (
-        <div draggable onDrag={onDrag}>
-            <div className="flex gap-2 cursor-move">
-                <EllipsisVerticalIcon/>
-                <EllipsisVerticalIcon/>
+        <>
+            <div
+                id={node.id.toString()}
+                className="flex py-2 border-b border-b-gray-200"
+                draggable onDrag={onDrag}
+                data-parentId={node.parent_id}
+                onClick={handleClick}
+            >
+                <div className="flex cursor-move">
+                    <EllipsisVerticalIcon className="text-gray-300" />
+                    <EllipsisVerticalIcon className="-ml-4 text-gray-300"/>
+                </div>
+                <div className={clsx("flex gap-2")}
+                     style={{
+                         paddingLeft: paddingLeft
+                     }}
+                >
+                    <Checkbox onChange={()=>onSelect(node)} checked={selected} indeterminate={indeterminate} />
+                    <div>
+                        {node.kind === AssetNodeKind.File ? <DocumentIcon/> : node.children?.length ? <FolderOpenedIcon/> : <FolderIcon/>}
+                    </div>
+                    <div>
+                        {node.name}
+                    </div>
+                </div>
             </div>
-            <div>
-                <div className="rounded-md bg-gray-300 p-2" onClick={()=>onSelect(node.id)}>
-                    {selected ? <CheckIcon/> : null}
-                    {childrenSelected ? <MinusIcon /> : null}
-                </div>
-                <div>
-                    {node.kind === AssetNodeKind.File ? <DocumentIcon/> : <FolderIcon/>}
-                </div>
-                <div>
-                    {node.name}
-                </div>
-            </div>
-        </div>
+        </>
     )
 }

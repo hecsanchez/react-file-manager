@@ -1,1 +1,1 @@
-export * from './_NodeList.tsx';
+export * from './_NodeList';

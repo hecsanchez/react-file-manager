@@ -1,46 +1,62 @@
-import {FC, useState} from "react";
-import {AssetNode} from "../../types";
-import {Node} from "../Node/_Node.tsx";
+import {FC} from "react";
+import {AssetNode} from "@/types";
+import {Node} from "@/components";
 
 interface NodeListProps {
-    nodes: AssetNode[]
+    nodes: AssetNode[];
+    onDoubleClick: (nodeId: number) => void;
+    onSelect: (node: AssetNode) => void;
+    selectedNodes: Array<AssetNode>;
+    indeterminateNodes: Array<AssetNode>;
 }
 
-export const NodeList: FC<NodeListProps> = ({ nodes }) => {
-    const [selectedNodes, setSelectedNodes] = useState<number[]>([]);
+export const NodeList: FC<NodeListProps> = ({ nodes, onDoubleClick, onSelect, selectedNodes = [], indeterminateNodes = [] }) => {
+
+    const buildTree = (nodes: Array<AssetNode>, parentId: number|null = null, level = 0): Array<AssetNode> => {
+        return nodes
+            .filter(node => node.parent_id === parentId)
+            .map(node => ({
+                ...node,
+                level,
+                children: buildTree(nodes, node.id, level + 1)
+            }));
+    }
 
     const handleDrag = () => {
 
     }
 
-    const handleSelect = (id: number): void => {
-        if (isSelected(id)) {
-            setSelectedNodes(prevState => prevState.filter(nodeId => nodeId !== id))
-        } else {
-            setSelectedNodes(prevState => ([...prevState, id]))
-        }
-    }
-
     const isSelected = (id: number): boolean => {
-        return selectedNodes.includes(id)
+        return selectedNodes.some(node=>node?.id === id)
     }
 
-    const areChildrenSelected = (id: number): boolean => {
-         // TODO: Add logic for checking if children are selected
-        return false
+    const isIndeterminate = (nodeId: number): boolean => {
+        return indeterminateNodes?.find(indeterminateNode=>indeterminateNode?.id === nodeId)
     }
 
     return (
-        <div>
-            {nodes.map((node: AssetNode)=>(
-                <Node
-                    node={node}
-                    onDrag={handleDrag}
-                    onSelect={handleSelect}
-                    selected={isSelected(node.id)}
-                    childrenSelected={areChildrenSelected(node.id)}
-                />
+        <>
+            {nodes?.map((node: AssetNode)=>(
+                <div key={node.id}>
+                    <Node
+                        node={node}
+                        onDrag={handleDrag}
+                        onSelect={onSelect}
+                        selected={isSelected(node.id)}
+                        indeterminate={isIndeterminate(node.id)}
+                        onDoubleClick={onDoubleClick}
+                    />
+                    {node.children ? (
+                        <NodeList
+                            nodes={node.children}
+                            onDoubleClick={onDoubleClick}
+                            selectedNodes={selectedNodes}
+                            onSelect={onSelect}
+                            indeterminateNodes={indeterminateNodes}
+                        />
+                    ) : null}
+                </div>
             ))}
-        </div>
+        </>
     )
 }
