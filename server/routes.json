@@ -1,0 +1,4 @@
+{
+  "/site/:siteId/asset": "/root",
+  "/site/:siteId/asset/:nodeId": "/children?parent_id=:nodeId"
+}

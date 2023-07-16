@@ -1,0 +1,156 @@
+{
+  "root": [
+    {
+      "id": 1,
+      "name": "Images",
+      "kind": "Folder",
+      "location": "/",
+      "type": "directory",
+      "parent_id": null,
+      "website_id": 1,
+      "level": 0
+    },
+    {
+      "id": 4,
+      "name": "Animations",
+      "kind": "Folder",
+      "location": "/",
+      "type": "directory",
+      "parent_id": null,
+      "website_id": 1,
+      "level": 0
+    },
+    {
+      "id": 7,
+      "name": "Docs",
+      "kind": "Folder",
+      "location": "/",
+      "type": "directory",
+      "parent_id": null,
+      "website_id": 1,
+      "level": 0
+    },
+    {
+      "id": 11,
+      "name": "audio_clip.mp3",
+      "kind": "File",
+      "location": "/",
+      "type": "mp3",
+      "parent_id": null,
+      "website_id": 1,
+      "level": 0
+    },
+    {
+      "id": 12,
+      "name": "license.txt",
+      "kind": "File",
+      "location": "/",
+      "type": "txt",
+      "parent_id": null,
+      "website_id": 1,
+      "level": 0
+    },
+    {
+      "id": 13,
+      "name": "SoundEffects",
+      "kind": "Folder",
+      "location": "/SoundEffects",
+      "type": "directory",
+      "parent_id": null,
+      "website_id": 1,
+      "level": 0
+    }
+  ],
+  "children": [
+    {
+      "id": 2,
+      "name": "landscape.jpg",
+      "kind": "File",
+      "location": "/Images/landscape.jpg",
+      "type": "jpg",
+      "parent_id": 1,
+      "website_id": 1,
+      "level": 1
+    },
+    {
+      "id": 3,
+      "name": "profile_picture.png",
+      "kind": "File",
+      "location": "/Images/profile_picture.png",
+      "type": "png",
+      "parent_id": 1,
+      "website_id": 1,
+      "level": 1
+    },
+    {
+      "id": 5,
+      "name": "intro.mp4",
+      "kind": "File",
+      "location": "/Animations/intro.mp4",
+      "type": "mp4",
+      "parent_id": 4,
+      "website_id": 1,
+      "level": 1
+    },
+    {
+      "id": 6,
+      "name": "transition.gif",
+      "kind": "File",
+      "location": "/Animations/transition.gif",
+      "type": "gif",
+      "parent_id": 4,
+      "website_id": 1,
+      "level": 1
+    },
+    {
+      "id": 8,
+      "name": "project_overview.pdf",
+      "kind": "File",
+      "location": "/Docs/project_overview.pdf",
+      "type": "pdf",
+      "parent_id": 7,
+      "website_id": 1,
+      "level": 1
+    },
+    {
+      "id": 9,
+      "name": "AssetSources",
+      "kind": "Folder",
+      "location": "/Docs/AssetSources",
+      "type": "directory",
+      "parent_id": 7,
+      "website_id": 1,
+      "level": 1
+    },
+    {
+      "id": 10,
+      "name": "image_sources.txt",
+      "kind": "File",
+      "location": "/Docs/AssetSources/image_sources.txt",
+      "type": "txt",
+      "parent_id": 9,
+      "website_id": 1,
+      "level": 2
+    },
+    {
+      "id": 14,
+      "name": "click.wav",
+      "kind": "File",
+      "location": "/SoundEffects/click.wav",
+      "type": "wav",
+      "parent_id": 13,
+      "website_id": 1,
+      "level": 1
+    },
+    {
+      "id": 15,
+      "name": "background_music.mp3",
+      "kind": "File",
+      "location": "/SoundEffects/background_music.mp3",
+      "type": "mp3",
+      "parent_id": 13,
+      "website_id": 1,
+      "level": 1
+    }
+  ]
+}
