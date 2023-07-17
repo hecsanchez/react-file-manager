@@ -1,12 +1,12 @@
-import {AssetNode} from "../types";
+import {AssetNodeDTO} from "../types";
 
-export const getAssetNodes = async (siteId: number): Promise<Array<AssetNode>>  => {
+export const getAssetNodes = async (siteId: number): Promise<Array<AssetNodeDTO>>  => {
     console.log('fetching')
     const response = await fetch(`/site/${siteId}/asset`);
-    return response.json();
+    return await response.json() as AssetNodeDTO[];
 }
 
-export const createAssetNode = async(siteId: number, assetNodePayload: Partial<AssetNode>): Promise<AssetNode> => {
+export const createAssetNode = async(siteId: number, assetNodePayload: Partial<AssetNodeDTO>): Promise<AssetNodeDTO> => {
     const response = await fetch(`/site/${siteId}/asset`, {
         method: 'POST',
         headers: {
@@ -14,15 +14,15 @@ export const createAssetNode = async(siteId: number, assetNodePayload: Partial<A
         },
         body: JSON.stringify(assetNodePayload)
     })
-    return response.json();
+    return await response.json() as AssetNodeDTO;
 }
 
-export const getAssetNodeChildren = async (siteId: number, nodeId: number): Promise<Array<AssetNode>> => {
+export const getAssetNodeChildren = async (siteId: number, nodeId: number): Promise<Array<AssetNodeDTO>> => {
     const response = await fetch(`/site/${siteId}/asset/${nodeId}`);
-    return response.json();
+    return await response.json() as AssetNodeDTO[];
 }
 
-export const updateAssetNode = async (siteId: number, nodeId: number, assetNodePayload: Partial<AssetNode>): Promise<AssetNode> => {
+export const updateAssetNode = async (siteId: number, nodeId: number, assetNodePayload: Partial<AssetNodeDTO>): Promise<AssetNodeDTO> => {
     const response = await fetch(`/site/${siteId}/asset/${nodeId}`, {
         method: 'PUT',
         headers: {
@@ -30,7 +30,7 @@ export const updateAssetNode = async (siteId: number, nodeId: number, assetNodeP
         },
         body: JSON.stringify(assetNodePayload)
     })
-    return response.json();
+    return await response.json() as AssetNodeDTO;
 }
 
 export const deleteAssetNodes = async(siteId: number, nodeIds: Array<number>) => {

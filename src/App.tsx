@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {NodeList} from "./components/NodeList";
 import {getAssetNodeChildren, getAssetNodes} from "./services/assetNode.ts";
 import {AssetNode} from "./types";
+import {Button, PlusIcon, Select} from "@/components";
 
 const siteId = 1;
 
@@ -60,10 +61,11 @@ function App() {
                     return {
                         ...prevNode,
                         ...node,
-                        children: prevNode.children?.map(childNode => ({
-                            ...childNode,
-                            selected: false
-                        }))
+                    }
+                } else if (prevNode.parent_id === node.id) {
+                    return {
+                        ...prevNode,
+                        selected: false,
                     }
                 }
 
@@ -84,10 +86,12 @@ function App() {
                     return {
                         ...prevNode,
                         ...node,
-                        children: prevNode.children?.map(childNode => ({
-                            ...childNode,
-                            selected: true
-                        }))
+                        indeterminate: false,
+                    }
+                } else if (prevNode.parent_id === node.id) {
+                    return {
+                        ...prevNode,
+                        selected: true,
                     }
                 }
 
@@ -97,11 +101,16 @@ function App() {
 
 
         if (isNodeSelected) {
+            console.log("node selected")
             setNodes(deselectNode);
         } else {
+            console.log("node NOT selected")
+
             setNodes(selectNode);
         }
     }
+
+    console.log('nodes', nodes)
 
     const isParentIndeterminate = (node: AssetNode): boolean => {
         const children = nodes.filter(child => child.parent_id === node.parent_id);
@@ -126,11 +135,18 @@ function App() {
 
   return (
     <div className="max-w-4xl m-auto my-12">
-      <NodeList
+        <div className="mb-8 flex justify-between">
+            <Select />
+            <Button>
+                <PlusIcon className="mr-1" />
+                Add New
+            </Button>
+        </div>
+        <NodeList
           nodes={buildTree(nodes)}
           onDoubleClick={handleDoubleClick}
           onSelect={handleSelect}
-      />
+        />
     </div>
   )
 }

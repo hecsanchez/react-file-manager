@@ -30,10 +30,8 @@ export const Node: FC<NodeProps> = ({
     return (
         <>
             <div
-                id={node.id.toString()}
                 className="flex py-2 border-b border-b-gray-200"
                 draggable onDrag={onDrag}
-                data-parentId={node.parent_id}
                 onClick={handleClick}
             >
                 <div className="flex cursor-move">

@@ -6,6 +6,6 @@ interface ButtonProps {
 
 export const Button: FC<ButtonProps> = ({ children }) => {
     return (
-        <button disabled>{children}</button>
+        <button className="flex bg-black text-white rounded-full py-3 px-6 min-w-max">{children}</button>
     )
 }
