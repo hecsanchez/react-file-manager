@@ -1,5 +1,5 @@
 import {FC} from "react";
-import {IconProps} from "./_types.ts";
+import {IconProps} from "./_types";
 
 export const CheckIcon: FC<IconProps> = ({ className = '' }) => {
     return (
