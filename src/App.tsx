@@ -7,8 +7,6 @@ const siteId = 1;
 
 function App() {
     const [nodes, setNodes] = useState<Array<AssetNode>>([])
-    const [selectedNodes, setSelectedNodes] = useState<Array<AssetNode>>([]);
-    const [indeterminateNodes, setIndeterminateNodes] = useState<Array<AssetNode>>([]);
 
     const buildTree = (nodes: Array<AssetNode>, parentId: number|null = null, level = 0): Array<AssetNode> => {
         return nodes
@@ -20,13 +18,17 @@ function App() {
             }));
     }
 
-    const handleDoubleClick = async (nodeId: number) => {
-        if (nodes.find(node=> node.parent_id === nodeId)) return
-        const response = await getAssetNodeChildren(siteId, nodeId)
-        setNodes(prevState=> [...prevState, ...response])
-        if (selectedNodes.some(node=>node.id === nodeId)) {
-            setSelectedNodes(prevState => ([...prevState, ...response]))
-        }
+    const handleDoubleClick = async (node: AssetNode) => {
+        if (nodes.some(existingNode=> existingNode.parent_id === node.id)) return
+
+        const response = await getAssetNodeChildren(siteId, node.id)
+        setNodes(prevState=> {
+            let newNodes = response;
+            if (node.selected) {
+                newNodes = response.map(node => ({...node, selected: true}))
+            }
+            return [...prevState, ...newNodes]
+        })
     }
 
 
@@ -43,51 +45,84 @@ function App() {
     }, [])
 
     const handleSelect = (node: AssetNode): void => {
-        if (selectedNodes.some(selectedNode=>selectedNode.id === node.id)) {
-            if (node.children) {
-                const childrenToRemove = node.children.map(child=>child.id);
-                setSelectedNodes(prevState => prevState.filter(selectedNode => selectedNode?.id !== node.id && !childrenToRemove.includes(selectedNode?.id)))
-            } else {
-                setSelectedNodes(prevState => prevState.filter(selectedNode => selectedNode?.id !== node.id))
-            }
+        const isNodeSelected = node.selected;
+
+        const deselectNode = (prevState: AssetNode[]): AssetNode[] => {
+            node.selected = false;
+            return prevState.map(prevNode => {
+                if (prevNode.id === node.parent_id) {
+                    return {
+                        ...prevNode,
+                        indeterminate: isParentIndeterminate(node),
+                        selected: isParentSelected(node)
+                    }
+                } else if (prevNode.id === node.id) {
+                    return {
+                        ...prevNode,
+                        ...node,
+                        children: prevNode.children?.map(childNode => ({
+                            ...childNode,
+                            selected: false
+                        }))
+                    }
+                }
+
+                return prevNode;
+            });
+        }
+
+        const selectNode = (prevState: AssetNode[]): AssetNode[] => {
+            node.selected = true;
+            return prevState.map(prevNode => {
+                if (prevNode.id === node.parent_id) {
+                    return {
+                        ...prevNode,
+                        indeterminate: isParentIndeterminate(node),
+                        selected: isParentSelected(node)
+                    }
+                } else if (prevNode.id === node.id) {
+                    return {
+                        ...prevNode,
+                        ...node,
+                        children: prevNode.children?.map(childNode => ({
+                            ...childNode,
+                            selected: true
+                        }))
+                    }
+                }
+
+                return prevNode;
+            });
+        }
+
+
+        if (isNodeSelected) {
+            setNodes(deselectNode);
         } else {
-            if(node.children) {
-                setSelectedNodes(prevState => ([...prevState, node, ...(node.children as Array<AssetNode>)]))
-            } else {
-                setSelectedNodes(prevState => ([...prevState, node]))
-            }
+            setNodes(selectNode);
         }
     }
 
-    const setParentAsIndeterminate = (parentId: number|null) => {
-        const childrenIds = nodes.filter(node=>node.parent_id === parentId).map(node=>node.id);
-        const selectedChildren = selectedNodes.filter(node => childrenIds.includes(node?.id));
-        const parentNode = nodes.find(node=>node.id === parentId) as AssetNode;
-        const isParentSelected = selectedNodes.some(node=>node.id === parentId);
+    const isParentIndeterminate = (node: AssetNode): boolean => {
+        const children = nodes.filter(child => child.parent_id === node.parent_id);
+        const selectedChildren = children.filter(child => {
+            if (child.id === node.id) return node.selected;
+            return child.selected
+        });
 
-        if (selectedChildren?.length === childrenIds?.length && isParentSelected || !parentNode) return;
+        if (selectedChildren.length === children.length) return false;
 
-        if (selectedChildren?.length !== 0 && selectedChildren?.length < childrenIds?.length) {
-            setIndeterminateNodes(prevState => ([...prevState, parentNode]));
-            if (isParentSelected) {
-                setSelectedNodes(prevState => prevState.filter(selectedNode => selectedNode?.id !== parentId))
-            }
-        } else if (selectedChildren?.length === childrenIds?.length) {
-            setIndeterminateNodes(prevState  => prevState.filter(indeterminateNode => indeterminateNode?.id !== parentId));
-            setSelectedNodes(prevState => ([...prevState, parentNode]))
-        } else {
-            setIndeterminateNodes(prevState  => prevState.filter(indeterminateNode => indeterminateNode?.id !== parentId));
-        }
+        return selectedChildren.length > 0 && selectedChildren.length < children.length;
+    };
+
+    const isParentSelected = (node: AssetNode): boolean => {
+        const children = nodes.filter(child => child.parent_id === node.parent_id);
+        const selectedChildren = children.filter(child => {
+            if (child.id === node.id) return node.selected;
+            return child.selected
+        });
+        if (selectedChildren.length === children.length) return true;
     }
-
-    useEffect(()=>{
-        nodes.forEach((node)=>{
-            if (node.parent_id) {
-                setParentAsIndeterminate(node?.parent_id);
-            }
-        })
-    }, [selectedNodes])
-
 
   return (
     <div className="max-w-4xl m-auto my-12">
@@ -95,8 +130,6 @@ function App() {
           nodes={buildTree(nodes)}
           onDoubleClick={handleDoubleClick}
           onSelect={handleSelect}
-          selectedNodes={selectedNodes}
-          indeterminateNodes={indeterminateNodes}
       />
     </div>
   )

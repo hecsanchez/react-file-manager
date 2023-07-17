@@ -11,4 +11,6 @@ export interface AssetNode {
     website_id: number;
     children?: Array<AssetNode>;
     level?: number;
+    indeterminate?: boolean;
+    selected?: boolean;
 }

@@ -10,22 +10,20 @@ interface NodeProps {
     onSelect: (node: AssetNode) => void;
     selected: boolean;
     indeterminate: boolean;
-    onDoubleClick: (nodeId: number) => void;
+    onDoubleClick: (node: AssetNode) => void;
 }
 
 export const Node: FC<NodeProps> = ({
     node,
     onDrag,
     onSelect,
-    selected= false,
-    indeterminate = false,
     onDoubleClick
 }) => {
     const paddingLeft = (node.level ?? 0) * 24;
 
     const handleClick = (e: MouseEvent) => {
         if (e.detail === 2) {
-            onDoubleClick?.(node.id)
+            onDoubleClick?.(node)
         }
     }
 
@@ -47,7 +45,7 @@ export const Node: FC<NodeProps> = ({
                          paddingLeft: paddingLeft
                      }}
                 >
-                    <Checkbox onChange={()=>onSelect(node)} checked={selected} indeterminate={indeterminate} />
+                    <Checkbox onChange={()=>onSelect(node)} checked={node.selected} indeterminate={node.indeterminate} />
                     <div>
                         {node.kind === AssetNodeKind.File ? <DocumentIcon/> : node.children?.length ? <FolderOpenedIcon/> : <FolderIcon/>}
                     </div>
